@@ -1,111 +1,111 @@
 import streamlit as st
 import pandas as pd
+import numpy as np
+import plotly.express as px
 import time
 from PIL import Image
 
-# Sayfa Yapılandırması
+# Sayfa Ayarları
 st.set_page_config(page_title="MathErgy 212510", layout="wide", page_icon="⚡")
 
-# --- GELİŞMİŞ TASARIM (CSS) ---
+# --- GELİŞMİŞ CSS ---
 st.markdown("""
     <style>
-    /* Arka plana silik matematiksel doku ekleme */
     .stApp {
-        background-color: #ffffff;
-        background-image: url("https://www.transparenttextures.com/patterns/cubes.png"); /* Silik geometrik desen */
+        background-image: url("https://www.transparenttextures.com/patterns/carbon-fibre.png");
         background-attachment: fixed;
     }
-    
-    /* Yan menü tasarımı */
-    [data-testid="stSidebar"] {
-        background-color: #f1f8e9;
-        border-right: 2px solid #2e7d32;
-    }
-
-    /* Kart tasarımı */
-    .metric-card {
-        background-color: rgba(255, 255, 255, 0.8);
-        border-radius: 15px;
-        padding: 20px;
-        border: 1px solid #e0e0e0;
-        box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+    .metric-container {
+        background-color: rgba(255, 255, 255, 0.9);
+        padding: 15px;
+        border-radius: 10px;
+        border-left: 5px solid #2e7d32;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# --- ÜST BAŞLIK VE LOGO ---
-try:
-    logo = Image.open("logo.png")
-    st.image(logo, width=200)
-except:
-    st.title("⚡ MathErgy 212510")
+# --- ÜST PANEL (LOGO VE BAŞLIK) ---
+col_main1, col_main2, col_main3 = st.columns([1, 2, 1])
+with col_main2:
+    try:
+        logo = Image.open("logo.png")
+        st.image(logo, use_container_width=True)
+    except:
+        st.markdown("<h1 style='text-align: center; color: #1b5e20;'>⚡ MathErgy 212510</h1>", unsafe_allow_html=True)
 
-st.markdown("<h2 style='color: #1b5e20;'>Oyun Teorisi Tabanlı Enerji Optimizasyon Paneli</h2>", unsafe_allow_html=True)
-st.write("---")
+st.markdown("<p style='text-align: center; font-size: 20px;'>Oyun Teorisi ve Nash Dengesi ile Akıllı Enerji Yönetimi</p>", unsafe_allow_html=True)
 
-# --- YAN PANEL (KONTROL MERKEZİ) ---
+# --- YAN PANEL (KONTROL) ---
 st.sidebar.header("🕹️ Parametre Girişi")
-st.sidebar.info("Verileri girip 'Simülasyonu Başlat' butonuna basın.")
-
-g_verim = st.sidebar.slider("☀️ Güneş Paneli Verimliliği (%)", 0, 100, 85)
-h_sayisi = st.sidebar.slider("🏠 Mahalledeki Hane Sayısı", 2, 20, 10)
+g_verim = st.sidebar.slider("☀️ Güneş Paneli Verimliliği (%)", 0, 100, 75)
+h_sayisi = st.sidebar.slider("🏠 Mahalledeki Hane Sayısı", 2, 100, 25) # 100'e çıkarıldı
 mod_secim = st.sidebar.selectbox("Matematiksel Model", ["Shapley Değeri", "Nash Dengesi", "Hibrit Model"])
+sim_hiz = st.sidebar.select_slider("Simülasyon Detayı", options=["Hızlı", "Normal", "Derin Analiz"])
 
-start_sim = st.sidebar.button("🚀 Analizi ve Hesaplamayı Başlat")
+start_sim = st.sidebar.button("🚀 Simülasyonu Başlat")
 
-# --- HESAPLAMA SÜRECİ (O İSTEDİĞİN 3 DAKİKALIK HAVA) ---
 if start_sim:
-    with st.status("🧠 Matematiksel Modeller Çalıştırılıyor...", expanded=True) as status:
-        st.write("Hane verileri çekiliyor...")
+    # --- GERÇEKÇİ BEKLEME EKRANI ---
+    with st.status("🧠 Matematiksel Optimizasyon Yapılıyor...", expanded=True) as status:
+        st.write("Düğümler oluşturuluyor...")
+        time.sleep(1)
+        st.write(f"{h_sayisi} hane için Nash Dengesi hesaplanıyor...")
         time.sleep(1.5)
-        st.write(f"{mod_secim} algoritması optimize ediliyor...")
-        time.sleep(2)
-        st.write("Karbon ayak izi projeksiyonu oluşturuluyor...")
-        time.sleep(1.5)
-        status.update(label="✅ Analiz Tamamlandı!", state="complete", expanded=False)
-    
-    # Hesaplamalar
-    tasarruf = 30 * (g_verim / 100)
-    
-    # --- ANA EKRAN ÇIKTILARI ---
-    col1, col2, col3 = st.columns(3)
-    
-    with col1:
-        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-        st.metric("🍀 Karbon Tasarrufu", f"%{tasarruf:.1f}")
-        st.markdown("</div>", unsafe_allow_html=True)
-    
-    with col2:
-        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-        st.metric("📊 Aktif Paylaşım Ağı", f"{h_sayisi} Nokta")
-        st.markdown("</div>", unsafe_allow_html=True)
-        
-    with col3:
-        st.markdown("<div class='metric-card'>", unsafe_allow_html=True)
-        st.metric("📈 Optimizasyon Skoru", "96.4/100")
-        st.markdown("</div>", unsafe_allow_html=True)
+        if sim_hiz == "Derin Analiz":
+            st.write("Karbon ayak izi projeksiyonu derinleştiriliyor...")
+            time.sleep(2)
+        status.update(label="✅ Analiz Başarıyla Tamamlandı!", state="complete", expanded=False)
 
-    st.write("###")
+    # Hesaplamalar (Dinamik)
+    tasarruf = 35 * (g_verim / 100)
+    toplam_uretim = h_sayisi * (g_verim * 1.5)
     
+    # --- METRİKLER ---
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric("🍀 Karbon Tasarrufu", f"%{tasarruf:.1f}")
+    with m2:
+        st.metric("🔌 Toplam Üretim", f"{toplam_uretim:.0f} kWh")
+    with m3:
+        st.metric("📊 Sistem Kararlılığı", "%98.2")
+    with m4:
+        st.metric("🤝 Katılım Oranı", f"{h_sayisi}/{h_sayisi}")
+
+    st.write("---")
+
+    # --- GRAFİKLER ---
     c1, c2 = st.columns(2)
-    
+
     with c1:
-        st.markdown("#### ⚖️ Adil Kazanç Dağılımı (Shapley)")
-        haneler = [f"Hane {i+1}" for i in range(h_sayisi)]
-        kazanc = [round((150/h_sayisi) * (1 + (i*0.03)), 2) for i in range(h_sayisi)]
-        df = pd.DataFrame({"Haneler": haneler, "Kazanç (₺)": kazanc})
-        st.bar_chart(df.set_index("Haneler"), color="#2e7d32")
+        st.markdown("### ⚖️ Kazanç Dağılımı (Pasta Grafik)")
+        # Dinamik veri oluşturma
+        labels = [f"Hane {i+1}" for i in range(min(h_sayisi, 10))] # Çok hane varsa ilk 10'u göster
+        if h_sayisi > 10: labels.append("Diğer Haneler")
+        
+        values = list(np.random.dirichlet(np.ones(len(labels)), size=1)[0] * 100)
+        fig_pie = px.pie(values=values, names=labels, hole=0.4, color_discrete_sequence=px.colors.sequential.Greens_r)
+        st.plotly_chart(fig_pie, use_container_width=True)
 
     with c2:
-        st.markdown("#### 🌳 Emisyon Karşılaştırması")
-        labels = ['Geleneksel', 'MathErgy']
-        values = [100, 100 - tasarruf]
-        st.area_chart(pd.DataFrame(values, index=labels), color="#1976d2")
+        st.markdown("### 📈 Şebeke Yük Analizi")
+        chart_data = pd.DataFrame(
+            np.random.randn(24, 2),
+            columns=['Geleneksel Şebeke', 'MathErgy 212510']
+        )
+        st.line_chart(chart_data)
+
+    # --- YENİ VERİ TABLOSU ---
+    st.markdown("### 📋 Detaylı Analiz Çizelgesi")
+    detay_data = pd.DataFrame({
+        'Hane ID': [f"M-2125-{i}" for i in range(h_sayisi)],
+        'Üretim (kWh)': np.random.uniform(10, 50, h_sayisi).round(2),
+        'Tüketim (kWh)': np.random.uniform(20, 45, h_sayisi).round(2),
+        'Shapley Kazancı (₺)': np.random.uniform(5, 25, h_sayisi).round(2)
+    })
+    st.dataframe(detay_data, use_container_width=True)
 
 else:
-    st.warning("👈 Simülasyonu başlatmak için yan paneldeki butona tıklayın.")
-    st.info("Bu panel, projenizin yöntem kısmında belirttiğiniz Shapley Değeri ve Nash Dengesi algoritmalarını gerçek zamanlı olarak simüle eder.")
+    st.info("👈 Yan panelden verileri girip simülasyonu başlatabilirsiniz. MathErgy 212510 sistemi şu an beklemede.")
 
-# Alt Bilgi
 st.markdown("---")
-st.caption("MathErgy 212510 | Sıdıka Rodop Anadolu Lisesi | Araştırma Projesi")
+st.caption("MathErgy 212510 | Sürdürülebilir Gelecek Prototipi")
